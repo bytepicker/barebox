@@ -7,6 +7,7 @@
 /dts-v1/;
 
 #include <arm64/rockchip/rk3568-evb1-v10.dts>
+#include <dt-bindings/gpio/gpio.h>
 #include "rk356x.dtsi"
 
 / {
@@ -57,3 +58,52 @@
 		};
 	};
 };
+
+&spi1 {
+    status = "okay";
+
+    ili9488@0 {
+        compatible = "ilitek,ili9488";
+        reg = <0>; /* CS0 */
+        spi-max-frequency = <32000000>;
+        spi-cpol;
+        spi-cpha;
+        status = "okay";
+
+        /* GPIO для дисплея */
+        dc-gpios = <&gpio2 7 GPIO_ACTIVE_HIGH>;       /* GPIO2_B7_d (MOSI) */
+        reset-gpios = <&gpio2 8 GPIO_ACTIVE_LOW>;     /* GPIO2_B8_d (RESET — для примера, если используется) */
+        led-gpios = <&gpio2 9 GPIO_ACTIVE_HIGH>;      /* GPIO2_B9_d (подсветка — для примера, если есть) */
+
+        bgr = <1>;
+        fps = <60>;
+        buswidth = <8>;
+
+        /* Пины SPI */
+        sck-gpios = <&gpio2 5 GPIO_ACTIVE_HIGH>;     /* GPIO2_B5_u (CLK) */
+        cs-gpios = <&gpio2 0 GPIO_ACTIVE_LOW>;       /* GPIO2_C0_d (CS0) */
+        miso-gpios = <&gpio2 6 GPIO_ACTIVE_HIGH>;    /* GPIO2_B6_u (MISO) */
+
+        init = <
+0x10000b0 0x00 
+0x1000011 
+0x20000ff 
+0x100003a 0x55 
+0x10000F7 0xA9 0x51 0x2C 0x82 
+0x10000C0 0x11 0x09 
+0x10000C1 0x41 
+0x10000C5 0x00 0x0A 0x80 
+0x10000B1 0xB0 0x11 
+0x10000B4 0x02 
+0x10000B6 0x02 0x02 
+0x10000B7 0xC6 
+0x10000BE 0x00 0x04 
+0x10000E9 0x00 
+0x1000036 0x08 
+0x10000E0 0x00 0x07 0x10 0x09 0x17 0x0B 0x41 0x89 0x4B 0x0A 0x0C 0x0E 0x18 0x1B 0x0F 
+0x10000E1 0x00 0x17 0x1A 0x04 0x0E 0x06 0x2F 0x45 0x43 0x02 0x0A 0x09 0x32 0x36 0x0F 
+0x1000011 
+0x1000029>; 
+    };
+};
+
